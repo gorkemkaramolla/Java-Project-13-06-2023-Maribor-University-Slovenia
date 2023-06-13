@@ -1,4 +1,4 @@
-## Java Project - Readme
+## Java Project - NodeJS - Java
 
 This repository contains the Java project developed by Görkem Karamolla for the course instructed by Andrej Škraba at the University of Maribor, Slovenia.
 
