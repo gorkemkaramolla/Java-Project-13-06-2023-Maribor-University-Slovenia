@@ -1,0 +1,5 @@
+Student ID: 1002602491
+Name: Görkem
+Surname : Karamolla
+Instructor : "Andrej Škraba" <andrej.skraba@um.si>
+Java Project

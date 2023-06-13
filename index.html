@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Employee Table</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="text-white">
+    <div class="w-screen min-h-screen bg-[#0C090A] flex flex-col items-center">
+      <div class="flex text-center p-12 flex-shrink-0">
+        <div class="table-wrapper">
+          <div id="total-amount" class="text-white"></div>
+
+          <table id="testTable" class="mx-auto mt-8">
+            <thead>
+              <tr id="headerRow"></tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="fixed top-0 left-0 w-screen bg-[#0C090A] flex justify-center">
+        <button
+          id="runTestBtn"
+          type="button"
+          class="inline-block rounded bg-success px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#14a44d] transition duration-150 ease-in-out hover:bg-success-600 hover:shadow-[0_8px_9px_-4px_rgba(20,164,77,0.3),0_4px_18px_0_rgba(20,164,77,0.2)] focus:bg-success-600 focus:shadow-[0_8px_9px_-4px_rgba(20,164,77,0.3),0_4px_18px_0_rgba(20,164,77,0.2)] focus:outline-none focus:ring-0 active:bg-success-700 active:shadow-[0_8px_9px_-4px_rgba(20,164,77,0.3),0_4px_18px_0_rgba(20,164,77,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(20,164,77,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(20,164,77,0.2),0_4px_18px_0_rgba(20,164,77,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(20,164,77,0.2),0_4px_18px_0_rgba(20,164,77,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(20,164,77,0.2),0_4px_18px_0_rgba(20,164,77,0.1)]"
+        >
+          Show Table
+        </button>
+        <button
+          id="deleteTableBtn"
+          type="button"
+          class="inline-block rounded bg-danger px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-[0_4px_9px_-4px_#dc4c64] transition duration-150 ease-in-out hover:bg-danger-600 hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:bg-danger-600 focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] focus:outline-none focus:ring-0 active:bg-danger-700 active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.3),0_4px_18px_0_rgba(220,76,100,0.2)] dark:shadow-[0_4px_9px_-4px_rgba(220,76,100,0.5)] dark:hover:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:focus:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)] dark:active:shadow-[0_8px_9px_-4px_rgba(220,76,100,0.2),0_4px_18px_0_rgba(220,76,100,0.1)]"
+        >
+          Hide Table
+        </button>
+      </div>
+    </div>
+    <style>
+      .table-wrapper {
+        max-height: 80vh;
+
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: transparent transparent;
+      }
+
+      #testTable {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      .table-wrapper::-webkit-scrollbar {
+        width: 0.5em;
+      }
+
+      .table-wrapper::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+
+      .table-wrapper::-webkit-scrollbar-thumb {
+        background-color: transparent;
+      }
+      #testTable th,
+      #testTable td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: center;
+      }
+
+      #testTable th {
+        background-color: #0c090a;
+        position: sticky;
+        top: 0;
+      }
+
+      #testTable td {
+        background-color: #151718;
+      }
+    </style>
+    <script>
+      const limitAge = 35;
+      const columns = [
+        'id',
+        'surname',
+        'name',
+        'number_of_hours',
+        'hourly_rate',
+        'birth_day',
+        'birth_month',
+        'birth_year',
+        'job_day',
+        'job_month',
+        'job_year',
+        'age',
+        'work_done',
+        'price_amount',
+      ];
+
+      let testRun = false; // Flag variable to track if the test has been run
+
+      document
+        .getElementById('runTestBtn')
+        .addEventListener('click', function () {
+          if (testRun) {
+            console.log('Test has already been run!');
+            return;
+          }
+
+          testRun = true; // Set the flag to true indicating the test has been run
+
+          fetch('http://localhost:8080/runTest')
+            .then(function (response) {
+              if (response.ok) {
+                return response.json(); // Parse the response as JSON
+              } else {
+                throw new Error('Test run failed');
+              }
+            })
+            .then(function (data) {
+              document.getElementById('total-amount').innerHTML =
+                'Total amount  = ' + JSON.stringify(data[200].totalAmount);
+
+              let headerRow = document.getElementById('headerRow');
+              let tableBody = document.getElementById('tableBody');
+
+              headerRow.innerHTML = '';
+              tableBody.innerHTML = '';
+
+              for (let i = 0; i < columns.length; i++) {
+                let headerCell = document.createElement('th');
+                headerCell.textContent = columns[i];
+                headerRow.appendChild(headerCell);
+              }
+
+              for (let i = 0; i < data.length; i++) {
+                let employee = data[i];
+                let row = document.createElement('tr');
+
+                // Populate employee data into table cells
+                for (let j = 0; j < columns.length; j++) {
+                  let cell = document.createElement('td');
+                  cell.textContent = employee[columns[j]] || '';
+                  if (j === 11) {
+                    if (employee[columns[j]] > limitAge) {
+                      cell.style.backgroundColor = 'red';
+                    }
+                  }
+                  row.appendChild(cell);
+                }
+
+                tableBody.appendChild(row);
+              }
+
+              console.log('Test run response:', data);
+            })
+            .catch(function (error) {
+              console.error('Test run failed:', error);
+            });
+        });
+
+      document
+        .getElementById('deleteTableBtn')
+        .addEventListener('click', function () {
+          document.getElementById('total-amount').innerHTML = '';
+
+          if (!testRun) {
+            console.log('No table to delete!');
+            return;
+          }
+
+          testRun = false; // Set the flag to false indicating the table is deleted
+
+          let headerRow = document.getElementById('headerRow');
+          let tableBody = document.getElementById('tableBody');
+
+          // Clear table contents
+          headerRow.innerHTML = '';
+          tableBody.innerHTML = '';
+
+          console.log('Table deleted');
+        });
+    </script>
+  </body>
+</html>
